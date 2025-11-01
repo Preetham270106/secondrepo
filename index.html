@@ -1,1 +1,948 @@
-Hello
+----------task 3--------
+
+// Importing built-in Node.js modules
+const os = require('os');
+const http = require('http');
+const fs = require('fs');
+
+// --- OS Module Demo ---
+console.log("===== OS Module Information =====");
+console.log("Operating System:", os.type());
+console.log("OS Platform:", os.platform());
+console.log("OS Architecture:", os.arch());
+console.log("Total Memory:", os.totalmem());
+console.log("Free Memory:", os.freemem());
+console.log("Home Directory:", os.homedir());
+console.log("----------------------------------\n");
+
+// --- FS Module Demo ---
+// Create a text file
+fs.writeFileSync('example.txt', 'Hello! This is a sample file created using FS module.');
+console.log("File 'example.txt' created successfully using FS module.\n");
+
+// --- HTTP Module Demo ---
+// Create a simple web server
+http.createServer((req, res) => {
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
+    res.end('Hello! This is a simple Node.js server using HTTP module.');
+}).listen(3000, () => {
+    console.log("HTTP Server running at http://localhost:3000/");
+});
+
+
+
+
+---------------------task 4,5-------------------------
+
+/*npm init -y
+npm install express body-parser*/
+
+
+
+const express = require('express');
+const bodyParser = require('body-parser');
+
+const app = express();
+app.use(bodyParser.json());
+
+// Dummy student data
+let students = [
+  { id: 1, name: 'John', branch: 'CSE' },
+  { id: 2, name: 'Sara', branch: 'ECE' }
+];
+
+// ---------------- CRUD ROUTES ----------------
+
+// READ all students
+app.get('/students', (req, res) => {
+  res.json(students);
+});
+
+// CREATE new student
+app.post('/students', (req, res) => {
+  const newStudent = {
+    id: students.length + 1,
+    name: req.body.name,
+    branch: req.body.branch
+  };
+  students.push(newStudent);
+  res.json({ message: 'Student added', student: newStudent });
+});
+
+// UPDATE a student
+app.put('/students/:id', (req, res) => {
+  const id = parseInt(req.params.id);
+  const student = students.find(s => s.id === id);
+  if (!student) return res.status(404).json({ message: 'Student not found' });
+
+  student.name = req.body.name || student.name;
+  student.branch = req.body.branch || student.branch;
+
+  res.json({ message: 'Student updated', student });
+});
+
+// DELETE a student
+app.delete('/students/:id', (req, res) => {
+  const id = parseInt(req.params.id);
+  students = students.filter(s => s.id !== id);
+  res.json({ message: 'Student deleted' });
+});
+
+// ---------------- SERVER ----------------
+app.listen(3000, () => console.log('Server running on http://localhost:3000'));
+
+
+
+
+
+
+
+-------------------task 6----------------------
+
+/*npm init -y
+npm install express jsonwebtoken body-parser*/
+
+
+
+const express = require('express');
+const bodyParser = require('body-parser');
+const jwt = require('jsonwebtoken');
+
+const app = express();
+app.use(bodyParser.json());
+
+const SECRET_KEY = 'mysecretkey';
+
+// Dummy user
+const user = { username: 'admin', password: '12345' };
+
+// Dummy student data
+let students = [
+  { id: 1, name: 'John', branch: 'CSE' },
+  { id: 2, name: 'Sara', branch: 'ECE' }
+];
+
+// ---------------- AUTH ----------------
+
+// Login route to generate JWT
+app.post('/login', (req, res) => {
+  const { username, password } = req.body;
+  if (username === user.username && password === user.password) {
+    const token = jwt.sign({ username }, SECRET_KEY, { expiresIn: '1h' });
+    res.json({ message: 'Login successful', token });
+  } else {
+    res.status(401).json({ message: 'Invalid credentials' });
+  }
+});
+
+// Middleware to verify token
+function verifyToken(req, res, next) {
+  const bearerHeader = req.headers['authorization'];
+  if (typeof bearerHeader !== 'undefined') {
+    const token = bearerHeader.split(' ')[1];
+    jwt.verify(token, SECRET_KEY, (err, decoded) => {
+      if (err) return res.status(403).json({ message: 'Invalid token' });
+      req.user = decoded;
+      next();
+    });
+  } else {
+    res.status(403).json({ message: 'Token required' });
+  }
+}
+
+// ---------------- CRUD ROUTES ----------------
+
+// READ all students
+app.get('/students', verifyToken, (req, res) => {
+  res.json(students);
+});
+
+// CREATE new student
+app.post('/students', verifyToken, (req, res) => {
+  const newStudent = {
+    id: students.length + 1,
+    name: req.body.name,
+    branch: req.body.branch
+  };
+  students.push(newStudent);
+  res.json({ message: 'Student added', student: newStudent });
+});
+
+// UPDATE a student
+app.put('/students/:id', verifyToken, (req, res) => {
+  const id = parseInt(req.params.id);
+  const student = students.find(s => s.id === id);
+  if (!student) return res.status(404).json({ message: 'Student not found' });
+
+  student.name = req.body.name || student.name;
+  student.branch = req.body.branch || student.branch;
+
+  res.json({ message: 'Student updated', student });
+});
+
+// DELETE a student
+app.delete('/students/:id', verifyToken, (req, res) => {
+  const id = parseInt(req.params.id);
+  students = students.filter(s => s.id !== id);
+  res.json({ message: 'Student deleted' });
+});
+
+// ---------------- SERVER ----------------
+app.listen(3000, () => console.log('Server running on http://localhost:3000'));
+
+
+
+
+
+
+--------------task 7-----------------------
+import React from 'react';
+
+function App() {
+  return (
+    <div>
+      <h1>Hello World</h1>
+    </div>
+  );
+}
+
+export default App;
+
+
+
+-----------task 8-----------------
+import React from 'react';
+
+function App() {
+  const currentDateTime = new Date().toLocaleString();
+
+  return (
+    <div>
+      <h1>Current System Date and Time:</h1>
+      <p>{currentDateTime}</p>
+    </div>
+  );
+}
+
+export default App;
+
+
+
+--------------task 9-------
+
+------functional component-------
+app.js------------
+
+import React from 'react';
+import DisplayInfo from './displayInfo';
+
+function App() {
+
+  return (
+    <div>
+      <DisplayInfo 
+        name="asdfad" 
+        age="21" 
+        branch="Computer Science" 
+        college="ABC College of Engineering"
+      />
+    </div>
+  );
+}
+
+export default App;
+
+
+
+displayInfo.js-------------
+
+import React from 'react';
+
+function DisplayInfo(props) {
+  return (
+    <div>
+      <h3>Displaying Props:</h3>
+      <p><b>Name:</b> {props.name}</p>
+      <p><b>Age:</b> {props.age}</p>
+      <p><b>Branch:</b> {props.branch}</p>
+      <p><b>College:</b> {props.college}</p>
+    </div>
+  );
+}
+export default DisplayInfo;
+
+
+-----------class componenet--------
+app.js--------------
+import React, { Component } from 'react';
+import DisplayInfo from './DisplayInfo'; // Import the class component
+
+class App extends Component {
+  render() {
+    return (
+      <div>
+        <h1>Props Example (Class Components)</h1>
+        <DisplayInfo name="Vyshnavi" age="22" branch="CSE (Cyber Security)" college="CVR College of Engineering" />
+      </div>
+    );
+  }
+}
+
+export default App;
+
+
+displayInfo.js------------
+
+import React, { Component } from 'react';
+
+class DisplayInfo extends Component {
+  render() {
+    const { name, age, branch, college } = this.props; // destructuring props
+    return (
+      <div>
+
+        <h3>Displaying Props:</h3>
+        <p><b>Name:</b> {name}</p>
+        <p><b>Age:</b> {age}</p>
+        <p><b>Branch:</b> {branch}</p>
+        <p><b>College:</b> {college}</p>
+      </div>
+    );
+  }
+}
+
+export default DisplayInfo;
+	
+
+------------task 10 -----------
+import React, { Component } from 'react';
+
+class App extends Component {
+  constructor() {
+    super();
+    this.state = {
+      currentDate: new Date().toLocaleDateString()
+    };
+  }
+
+  render() {
+    return (
+      <div>
+        <h1>Current Date using State</h1>
+        <p>{this.state.currentDate}</p>
+      </div>
+    );
+  }
+}
+
+export default App;
+
+
+-----------task 11--------
+
+
+
+import React from "react";
+
+class App extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { count: 0, show: true };
+    console.log("Constructor: Component created");
+  }
+
+  componentDidMount() {
+    console.log("componentDidMount: Component mounted");
+  }
+
+  componentDidUpdate() {
+    console.log("componentDidUpdate: Component updated");
+  }
+
+  componentWillUnmount() {
+    console.log("componentWillUnmount: Component unmounted");
+  }
+
+  render() {
+    console.log("Render: UI rendered");
+    return (
+      <div style={{ padding: "20px", border: "1px solid gray" }}>
+        <h1>React Lifecycle Basic Demo</h1>
+        {this.state.show && (
+          <div>
+            <p>Count: {this.state.count}</p>
+            <button onClick={() => this.setState({ count: this.state.count + 1 })}>
+              Increment
+            </button>
+          </div>
+        )}
+        <br />
+        <button onClick={() => this.setState({ show: !this.state.show })}>
+          Toggle Component
+        </button>
+      </div>
+    );
+  }
+}
+
+export default App;
+
+
+------------- task 12---------------
+
+import React, { Component } from 'react';
+
+class App extends Component {
+  constructor() {
+    super();
+    this.state = {
+      message: ''
+    };
+
+    this.showDateTime = this.showDateTime.bind(this);
+  }
+
+  showDateTime() {
+    const currentDateTime = new Date().toLocaleString();
+    this.setState({ message: `Current Date and Time: ${currentDateTime}` });
+  }
+
+  showGoodbye = () => {
+    this.setState({ message: 'Good Bye' });
+  };
+
+  render() {
+    return (
+      <div >
+        <h1>Button Click Event Demo</h1>
+        <button onClick={this.showDateTime} >
+          Show Date & Time
+        </button>
+        <button onClick={this.showGoodbye}>Say Goodbye</button>
+
+        <p >{this.state.message}</p>
+      </div>
+    );
+  }
+}
+
+export default App;
+
+
+
+
+
+
+------------task 13--------------
+import React, { Component } from 'react';
+import './App.css';
+
+class App extends Component {
+  constructor() {
+    super();
+    this.state = {
+      input: ''
+    };
+  }
+
+  handleClick = (value) => {
+    this.setState({ input: this.state.input + value });
+  };
+
+  calculateResult = () => {
+    try {
+      this.setState({ input: eval(this.state.input).toString() });
+    } catch {
+      this.setState({ input: 'Error' });
+    }
+  };
+
+  clearInput = () => {
+    this.setState({ input: '' });
+  };
+
+  render() {
+    return (
+      <div className="calculator-container">
+        <h1>React Calculator</h1>
+        <input
+          type="text"
+          value={this.state.input}
+          className="calculator-screen"
+        />
+
+        {/* Row 1 */}
+        <div className="row">
+          <button className="button" onClick={() => this.handleClick('7')}>7</button>
+          <button className="button" onClick={() => this.handleClick('8')}>8</button>
+          <button className="button" onClick={() => this.handleClick('9')}>9</button>
+          <button className="button operator" onClick={() => this.handleClick('/')}>/</button>
+        </div>
+
+        {/* Row 2 */}
+        <div className="row">
+          <button className="button" onClick={() => this.handleClick('4')}>4</button>
+          <button className="button" onClick={() => this.handleClick('5')}>5</button>
+          <button className="button" onClick={() => this.handleClick('6')}>6</button>
+          <button className="button operator" onClick={() => this.handleClick('*')}>*</button>
+        </div>
+
+        {/* Row 3 */}
+        <div className="row">
+          <button className="button" onClick={() => this.handleClick('1')}>1</button>
+          <button className="button" onClick={() => this.handleClick('2')}>2</button>
+          <button className="button" onClick={() => this.handleClick('3')}>3</button>
+          <button className="button operator" onClick={() => this.handleClick('-')}>-</button>
+        </div>
+
+        {/* Row 4 */}
+        <div className="row">
+          <button className="button" onClick={() => this.handleClick('0')}>0</button>
+          <button className="button" onClick={() => this.handleClick('.')}>.</button>
+          <button className="button equals" onClick={this.calculateResult}>=</button>
+          <button className="button operator" onClick={() => this.handleClick('+')}>+</button>
+        </div>
+
+        {/* Clear Row */}
+        <div className="row">
+          <button className="button clear" onClick={this.clearInput}>C</button>
+        </div>
+      </div>
+    );
+  }
+}
+
+export default App;
+
+
+---------------- task 14------------------
+
+import React, { Component } from 'react';
+import './App.css';
+
+class App extends Component {
+  constructor() {
+    super();
+    this.state = {
+      name: '',
+      email: '',
+      password: '',
+      gender: '',
+      country: '',
+      message: ''
+    };
+  }
+
+  handleChange = (e) => {
+    this.setState({ [e.target.name]: e.target.value });
+  };
+
+  handleSubmit = (e) => {
+    e.preventDefault();
+    const { name, email, password, gender, country } = this.state;
+    this.setState({
+      message: `Registered Successfully!\nName: ${name}\nEmail: ${email}\nGender: ${gender}\nCountry: ${country}`
+    });
+  };
+
+  render() {
+    return (
+      <div className="form-container">
+        <h1>Registration Form</h1>
+        <form onSubmit={this.handleSubmit}>
+          <label>Name:</label>
+          <input
+            type="text"
+            name="name"
+            value={this.state.name}
+            onChange={this.handleChange}
+            required
+          />
+
+          <label>Email:</label>
+          <input
+            type="email"
+            name="email"
+            value={this.state.email}
+            onChange={this.handleChange}
+            required
+          />
+
+          <label>Password:</label>
+          <input
+            type="password"
+            name="password"
+            value={this.state.password}
+            onChange={this.handleChange}
+            required
+          />
+
+          <label>Gender:</label>
+          <select name="gender" value={this.state.gender} onChange={this.handleChange} required>
+            <option value="">Select Gender</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+          </select>
+
+          <label>Country:</label>
+          <input
+            type="text"
+            name="country"
+            value={this.state.country}
+            onChange={this.handleChange}
+            required
+          />
+
+          <button type="submit">Register</button>
+        </form>
+
+        {this.state.message && (
+          <div className="message">
+            <pre>{this.state.message}</pre>
+          </div>
+        )}
+      </div>
+    );
+  }
+}
+
+export default App;
+
+
+-----------task 15-----------
+src/
+ ├── App.js
+ ├── Home.js
+ ├── About.js
+ ├── Product.js
+ ├── Contact.js
+
+----------Home.js------------
+import React from "react";
+
+function Home() {
+  return <h2>Welcome to Home Page</h2>;
+}
+
+export default Home;
+
+
+-------product.js-------
+import React from "react";
+
+function Product() {
+  return <h2>Our Product Page</h2>;
+}
+
+export default Product;
+
+
+--------about-js------
+import React from "react";
+
+function About() {
+  return <h2>About Us</h2>;
+}
+
+export default About;
+
+
+--------contact.js------
+import React from "react";
+
+function Contact() {
+  return <h2>Contact Us</h2>;
+}
+
+export default Contact;
+
+
+
+
+
+--------App.js---------
+
+import React from "react";
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import Home from "./Home";
+import About from "./About";
+import Product from "./Product";
+import Contact from "./Contact";
+
+function App() {
+  return (
+    <Router>
+      <div style={{ padding: "20px", fontFamily: "Arial" }}>
+        <nav style={{ display: "flex", gap: "20px", marginBottom: "20px" }}>
+          <Link to="/">Home</Link>
+          <Link to="/product">Product</Link>
+          <Link to="/about">About</Link>
+          <Link to="/contact">Contact</Link>
+        </nav>
+
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/product" element={<Product />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
+        </Routes>
+      </div>
+    </Router>
+  );
+}
+
+export default App;
+
+
+
+
+
+------------------task 18---------------
+import React, { Component } from 'react';
+
+class App extends Component {
+  constructor() {
+    super();
+    this.state = {
+      todos: [],
+      todoText: ''
+    };
+  }
+
+  handleChange = (e) => {
+    this.setState({ todoText: e.target.value });
+  };
+
+  addTodo = () => {
+    if (this.state.todoText.trim() === '') return;
+    this.setState({
+      todos: [...this.state.todos, { text: this.state.todoText, completed: false }],
+      todoText: ''
+    });
+  };
+
+  deleteTodo = (index) => {
+    const todos = [...this.state.todos];
+    todos.splice(index, 1);
+    this.setState({ todos });
+  };
+
+  toggleComplete = (index) => {
+    const todos = [...this.state.todos];
+    todos[index].completed = !todos[index].completed;
+    this.setState({ todos });
+  };
+
+  render() {
+    return (
+      <div>
+        <h1>TODO App</h1>
+        <div>
+	
+            type="text"
+            value={this.state.todoText}
+            onChange={this.handleChange}
+            placeholder="Enter a task"
+          />
+          <button onClick={this.addTodo}>Add</button>
+        </div>
+
+        <ul>
+          {this.state.todos.map((todo, index) => (
+            <li key={index}>
+              <span
+                style={{ textDecoration: todo.completed ? 'line-through' : 'none', cursor: 'pointer' }}
+                onClick={() => this.toggleComplete(index)}
+              >
+                {todo.text}
+              </span>
+              <button onClick={() => this.deleteTodo(index)}>Delete</button>
+            </li>
+          ))}
+        </ul>
+      </div>
+    );
+  }
+}
+
+export default App;
+
+
+import { useEffect, useState } from "react";
+import {getDatabase, ref, push, onValue} from 'firebase/database';
+import { initializeApp } from "firebase/app";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDYznb0MpjNYpZH4mF1rwKERZk8aYRR3Vk",
+  authDomain: "student-management-fd5ef.firebaseapp.com",
+  databaseURL: "https://student-management-fd5ef-default-rtdb.firebaseio.com",
+  projectId: "student-management-fd5ef",
+  storageBucket: "student-management-fd5ef.firebasestorage.app",
+  messagingSenderId: "447868692051",
+  appId: "1:447868692051:web:ad19137c8a8f18852ec8a6",
+  measurementId: "G-TPK7TVEC64"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app, "https://student-management-fd5ef-default-rtdb.firebaseio.com/");
+const studentRef = ref(db, 'students');
+
+export default function App(){
+    const [students, setStudents] = useState([]);
+    const [name, setName] = useState('');
+    const [course, setCourse] = useState('');
+    const [loading, setLoading] = useState(true);
+
+    useEffect(()=>{
+        const unsubscribe = onValue(studentRef, (snapshot)=>{
+            const data = snapshot.val();
+            const studentList = [];
+            if(data){
+                for(const key in data)
+                    studentList.push({ id: key, ...data[key] });
+            }
+            setStudents(studentList);
+            setLoading(false);
+        });
+
+        return () => unsubscribe();
+    }, []);
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        if(name && course){
+            push(studentRef, {name, course});
+            setName('');
+            setCourse('');
+        }
+    };
+
+    return(
+        <div>
+            <form onSubmit={handleSubmit}>
+                <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="name"/>
+                <input type="text" value={course} onChange={(e) => setCourse(e.target.value)} placeholder="course"/>
+                <button type="submit">Submit</button>
+            </form>
+            <div>
+                <h3>Student List</h3>
+                {loading && <p>Loading...</p>}
+                <ul>
+                    {students.map(student => (
+                        <li key={student.id}>
+                            {student.name} - {student.course}
+                        </li>
+                    ))}
+                </ul>
+            </div>
+        </div>
+    );
+}
+
+
+
+
+
+import React, {useState, useEffect} from "react";
+import axios from 'axios';
+import {Line} from 'react-chartjs-2';
+import {
+    Chart as ChartJS,
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    Title,
+    Tooltip,
+    Legend,
+} from 'chart.js';
+
+ChartJS.register(
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    Title,
+    Tooltip,
+    Legend
+);
+
+const API_KEY = "49d7a4c3435caf888bfd50fd3ef76fb2";
+
+const city = "Hyderabad";
+
+export default function App6(){
+    const [currentWeather, setCurrentWeather] = useState(null);
+    const [chartData, setChartData] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        const currentWeatherUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric`;
+
+        const forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${API_KEY}&units=metric`;
+
+        Promise.all([
+            axios.get(currentWeatherUrl),
+            axios.get(forecastUrl),
+        ])
+        .then(([currentRes, forecastRes]) => {
+            setCurrentWeather(currentRes.data);
+
+            const dailyForecasts = forecastRes.data.list.filter(item => 
+                item.dt_txt.includes("12:00:00")
+            );
+
+            const transformedData = {
+                labels: dailyForecasts.map(item => {
+                    // Format to just the date (e.g., "Oct 31")
+                    const date = new Date(item.dt_txt);
+                    return date.toLocaleString('en-US', { month: 'short', day: 'numeric' });
+                }),
+                datasets: [
+                  {
+                    label: `Noon temperature forecast for ${city} (°C)`,
+                    // --- FIX: Map over the filtered list ---
+                    data: dailyForecasts.map(item => item.main.temp),
+                    borderColor: 'rgb(75, 192, 192)',
+                    tension: 0.1
+                  },
+                ],
+            };
+
+            setChartData(transformedData);
+
+            setLoading(false);
+        })
+        .catch(err => {
+            console.error("Error fetching weather data:", err);
+            setError("Failed to fetch weather data. Check your API key.");
+            setLoading(false);
+        });
+    }, []);
+
+    if (loading) {
+      return <div style={{ padding: '20px' }}>Loading all weather data...</div>;
+    }
+
+    if (error) {
+      return <div style={{ padding: '20px', color: 'red' }}>{error}</div>;
+    }
+
+    return(
+        <div>
+            <div>
+                <p>Temperature: {currentWeather.main.temp}</p>
+                <p>Temperature: {currentWeather.main.feels_like}</p>
+            </div>
+            <div style={{ maxWidth: '800px', margin: 'auto' }}>
+                <h2 style={{ textAlign: 'center' }}>
+                  5-Day Forecast (Graphical Representation)
+                </h2>
+                {chartData && (
+                  <Line data={chartData} />
+                )}
+              </div>
+        </div>
+    );
+}
